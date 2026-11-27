@@ -1,1 +1,3 @@
 For authorized updates to this kit, validate the changed package, review the diff, stage only the intended files, commit each completed change and push it to the configured Asura3301/hap_compute_design_kit origin. Respect a later request for local-only work. Report a rejected push and preserve remote history. Never include application records or credentials.
+
+Keep this public kit reusable across HAP applications. Store organization-specific builds, live validation scripts, worksheet mappings, deployment identifiers and screenshots outside this repository. Public templates and automated tests use generic, synthetic projects.

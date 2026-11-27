@@ -11,23 +11,15 @@ Plan and build a standalone site or a frontend for an existing HAP application. 
 
 </details>
 
-## AeroFreight Operations Desk
-
-A reference application with a shipment queue, page metrics, search, status filters, route details and an operations timeline. The Compute version uses the signed-in HAP user's permissions to read the connected worksheets. The screenshot uses sample data.
-
-![AeroFreight Operations Desk showing a shipment and operations timeline](docs/media/aerofreight.png)
-
-From the repository root, run `npm run demo` and open the printed local URL. Follow the [AeroFreight setup](apps/aerofreight/README.md) to connect an existing app.
-
 ## Repository map
 
 | Component | Location |
 | --- | --- |
-| Web UI and Compute API | [apps/aerofreight](apps/aerofreight) |
+| Reusable UI and templates | [assets](skills/hap-compute-design/assets) |
 | Codex plugin and local catalog | [plugin.json](plugin.json) · [.agents/plugins](.agents/plugins) |
 | VS Code extension | [extensions/vscode](extensions/vscode) |
 | Planner, CLI and reusable templates | [skills/hap-compute-design](skills/hap-compute-design) |
-| HAP adapter and browser tests | [tests](tests) |
+| Planner and starter browser tests | [tests](tests) |
 | CLI tests | [skills/hap-compute-design/test](skills/hap-compute-design/test) |
 | Upstream design references | [docs/REFERENCES.md](docs/REFERENCES.md) |
 
@@ -86,6 +78,6 @@ To connect the queue to an existing HAP app, map its fields to your Compute serv
 
 ## Development
 
-Run `npm test` for CLI and adapter tests. CI also runs Chromium tests and builds downloadable plugin, skill, extension and npm archives with SHA256 checksums. The starter checks cover keyboard navigation, 360 px layout, axe accessibility rules and a 16 KiB local page payload budget. See the [changelog](CHANGELOG.md) for version history. See the [release plan](docs/ROADMAP.md) for packaging, visual checks and the live Compute acceptance scenarios.
+Run `npm test` for CLI tests, or `npm run test:browser` with Playwright and axe available to check the planner and reusable starters. CI also runs Chromium tests and builds downloadable plugin, skill, extension and npm archives with SHA256 checksums. The starter checks cover keyboard navigation, 360 px layout, axe accessibility rules and a 16 KiB local page payload budget. See the [changelog](CHANGELOG.md) for version history. See the [release plan](docs/ROADMAP.md) for packaging, visual checks and the live Compute acceptance scenarios.
 
 [MIT license](LICENSE)

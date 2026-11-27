@@ -4,8 +4,7 @@
   "private": true,
   "engines": {"node": ">=18"},
   "scripts": {
-    "test": "npm test --prefix skills/hap-compute-design && node --test tests/aerofreight.test.mjs",
-    "test:browser": "node scripts/browser-test.cjs && node tests/aerofreight-browser.cjs",
-    "demo": "node tests/aerofreight-fixture.mjs"
+    "test": "npm test --prefix skills/hap-compute-design",
+    "test:browser": "node tests/starters-browser.cjs"
   }
 }
