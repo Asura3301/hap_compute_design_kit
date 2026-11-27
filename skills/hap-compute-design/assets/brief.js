@@ -39,4 +39,19 @@ function normalizeBrief(input) {
   return brief;
 }
 
-if (typeof module !== 'undefined') module.exports = {normalizeBrief};
+function designTokens(brief) {
+  const palette = {
+    business: ['#f4f6f3', '#20312d', '#ffffff', '#16694c', '#ffffff'],
+    editorial: ['#fff1da', '#3d2e22', '#fffcf5', '#864419', '#ffffff'],
+    dark: ['#192631', '#f0f5fa', '#243545', '#95dbef', '#192631'],
+  }[brief.style];
+  const [canvas, ink, panel, accent, onAccent] = palette;
+  return {
+    canvas, ink, panel, accent,
+    'on-accent': onAccent,
+    typeface: {sans: 'system-ui, sans-serif', serif: 'Georgia, serif', mono: 'monospace'}[brief.font],
+    space: brief.density === 'compact' ? '.65rem' : '1rem',
+  };
+}
+
+if (typeof module !== 'undefined') module.exports = {normalizeBrief, designTokens};

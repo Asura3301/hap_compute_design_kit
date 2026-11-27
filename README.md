@@ -35,7 +35,7 @@ cp -R skills/hap-compute-design "$PROJECT_DIR/.agents/skills/"
 
 Open that project in your agent and ask it to “Use hap-compute-design with design-brief.json. Show me the screens and how we will test the primary task.” For a Compute project, install the official Compute skill using **Create Compute → Connect Other AI Tools** in your organization. [HAP Compute setup](https://help.mingdao.com/en/compute/#22-connect-other-ai-tools)
 
-To make `hap-design` available on your PATH, run `npm install -g ./skills/hap-compute-design` from the clone. For local development use `npm link` from the skill directory.
+To make `hap-design` available on your PATH, run `npm install -g ./skills/hap-compute-design` from the clone. For local development use `npm link` from the skill directory. Checked builds are available as workflow artifacts in [GitHub Actions](https://github.com/Asura3301/hap_compute_design_kit/actions/workflows/cli.yml). For an archive installation, download the artifact from a successful run, unzip it and run `npm install -g ./hap-compute-design-0.3.1.tgz` using the filename in the artifact.
 
 | Command | What it does |
 | --- | --- |
@@ -43,10 +43,10 @@ To make `hap-design` available on your PATH, run `npm install -g ./skills/hap-co
 | `hap-design styles` | Opens the planner link at the visual preview |
 | `hap-design check design-brief.json` | Validates and prints the normalized brief as JSON |
 | `hap-design scaffold BRIEF.json --template standalone\|dispatch --out NEW_DIRECTORY` | Creates a themed frontend starter |
-| `hap-design apps --org ID --origin HTTPS_ORIGIN` | Lists apps in the PAT owner's scope |
-| `hap-design new --org ID --origin HTTPS_ORIGIN` | Preloads the app picker from that list |
+| `hap-design apps --org ID --origin HTTPS_API_BASE` | Lists apps in the PAT owner's scope |
+| `hap-design new --org ID --origin HTTPS_API_BASE` | Preloads the app picker from that list |
 
-For app discovery, provide `HAP_PAT` through your local environment. Use the approved HTTPS API origin for your organization, with the scheme and hostname only. The CLI sends the PAT to that origin. App names and IDs are included in the local planner. Keep that file on your machine. Website visitors sign in through the access policy configured for the deployed site.
+For app discovery, provide `HAP_PAT` through your local environment. Use the approved HTTPS API base URL for your organization. HAP Server deployments can include the documented `/api` suffix. The CLI sends the PAT to that origin. [App list API](https://apidoc.mingdao.com/docs/app/application-v3-get--v3-apps-list?auth=pat&version=v3) App names and IDs are included in the local planner. Keep that file on your machine. Website visitors sign in through the access policy configured for the deployed site.
 
 ## Build and preview a starter
 
@@ -60,6 +60,6 @@ To connect the queue to an existing HAP app, map its fields to your Compute serv
 
 ## Development
 
-Run `npm test --prefix skills/hap-compute-design` to test the CLI. CI also runs Chromium tests and builds downloadable skill and npm archives with SHA256 checksums. See the [release plan](docs/ROADMAP.md) for packaging, visual checks and the live Compute acceptance scenarios.
+Run `npm test --prefix skills/hap-compute-design` to test the CLI. CI also runs Chromium tests and builds downloadable skill and npm archives with SHA256 checksums. The starter checks cover keyboard navigation, 360 px layout, axe accessibility rules and a 16 KiB local page payload budget. See the [changelog](CHANGELOG.md) for version history. See the [release plan](docs/ROADMAP.md) for packaging, visual checks and the live Compute acceptance scenarios.
 
 [MIT license](LICENSE)

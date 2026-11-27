@@ -75,13 +75,14 @@ async function verify() {
     assert.match(page.url(), /#hours$/);
     await page.getByText('09:00–16:00').waitFor();
     await assertFits(page);
+    await assertStarter(page);
     await page.goto(origin + '/dispatch/index.html');
     await page.getByRole('searchbox').fill('1048');
     await page.locator('summary').press('Enter');
     await page.getByText('14:00–16:00').waitFor();
+    await assertStarter(page);
     await page.getByRole('searchbox').fill('missing');
     await page.getByText('No matching orders.').waitFor();
-    assert.deepEqual((await new AxeBuilder({page}).analyze()).violations.map(v => v.id), []);
     await assertFits(page);
     await page.goto(origin + '/connected/index.html');
     await page.getByText('Could not load orders. Try again.').waitFor();
@@ -102,6 +103,19 @@ async function verify() {
     if (planner) await rm(new URL('.', planner), {recursive: true});
     await rm(work, {recursive: true});
   }
+}
+
+async function assertStarter(page) {
+  assert.deepEqual((await new AxeBuilder({page}).analyze()).violations.map(v => v.id), []);
+  const resources = await page.evaluate(() => [
+    ...performance.getEntriesByType('navigation'),
+    ...performance.getEntriesByType('resource'),
+  ].map(({name, decodedBodySize}) => ({name, decodedBodySize})));
+  const origin = new URL(page.url()).origin;
+  const size = resources.reduce((sum, entry) => sum + entry.decodedBodySize, 0);
+  assert.equal(resources.every(entry => new URL(entry.name).origin === origin), true);
+  assert.ok(size > 0 && size < 16 * 1024, 'Starter payload must be below 16 KiB');
+  console.log(new URL(page.url()).pathname + ' loaded ' + size + ' decoded bytes without third-party requests.');
 }
 
 async function assertFits(page) {

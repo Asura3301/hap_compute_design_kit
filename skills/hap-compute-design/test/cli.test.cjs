@@ -77,7 +77,7 @@ test('uses the owner scope and never includes the PAT in the planner', () => {
     const preload = join(cwd, 'fetch.cjs');
     writeFileSync(preload, `
       globalThis.fetch = async (url, options) => {
-        if (url.href !== 'https://example.test/v3/apps/list?orgId=org-1&permissionScope=owner' ||
+        if (url.href !== 'https://example.test' + process.env.FIXTURE_PREFIX + '/v3/apps/list?orgId=org-1&permissionScope=owner' ||
             options.headers.Authorization !== 'Bearer fixture-pat' || options.redirect !== 'error') {
           throw Error('Unexpected app list request');
         }
@@ -85,23 +85,25 @@ test('uses the owner scope and never includes the PAT in the planner', () => {
         return Response.json({success: true, data: process.env.FIXTURE === 'empty' ? [] : [
           {appId: 'app-1', name: 'Dispatch & Co', isOwner: true},
           {appId: 'app-2', name: 'Hidden fixture', isOwner: false},
+          {appId: 'app-3', name: 'Unverified fixture'},
         ]});
       };
     `);
-    const call = (command, fixture) => spawnSync(process.execPath,
-      ['--require', preload, cli, command, '--org', 'org-1', '--origin', 'https://example.test'],
-      {cwd, encoding: 'utf8', env: {...process.env, HAP_PAT: 'fixture-pat', FIXTURE: fixture}});
+    const call = (command, fixture, prefix = '') => spawnSync(process.execPath,
+      ['--require', preload, cli, command, '--org', 'org-1', '--origin', 'https://example.test' + prefix],
+      {cwd, encoding: 'utf8', env: {...process.env, HAP_PAT: 'fixture-pat', FIXTURE: fixture, FIXTURE_PREFIX: prefix}});
     const plannerResult = call('new', 'success');
     assert.equal(plannerResult.status, 0, plannerResult.stderr);
     const planner = new URL(plannerResult.stdout.trim());
     try {
       const html = readFileSync(planner, 'utf8');
       assert.match(html, /Dispatch &amp; Co/);
-      assert.doesNotMatch(html, /fixture-pat|Hidden fixture/);
+      assert.doesNotMatch(html, /fixture-pat|Hidden fixture|Unverified fixture/);
     } finally {
       rmSync(new URL('.', planner), {recursive: true});
     }
     assert.deepEqual(JSON.parse(call('apps', 'empty').stdout), []);
+    assert.equal(JSON.parse(call('apps', 'success', '/api').stdout)[0].id, 'app-1');
     const denied = call('apps', 'denied');
     assert.equal(denied.status, 1);
     assert.match(denied.stderr, /HTTP 403/);

@@ -9,19 +9,23 @@ import brief from '../assets/brief.js';
 async function listApps(org, origin) {
   if (!org || !origin || !process.env.HAP_PAT) throw Error('Provide --org, --origin (your organization’s HTTPS API origin) and HAP_PAT.');
   const host = new URL(origin);
-  if (host.protocol !== 'https:' || host.origin !== origin) throw Error('--origin must be an HTTPS origin without a path.');
-  const url = new URL('/v3/apps/list', host);
+  if (host.protocol !== 'https:' || ![host.origin, host.origin + '/api'].includes(origin.replace(/\/$/, ''))) {
+    throw Error('--origin must be an HTTPS API base URL with an optional /api suffix.');
+  }
+  const url = new URL((host.pathname === '/' ? '' : '/api') + '/v3/apps/list', host);
   url.searchParams.set('orgId', org);
   url.searchParams.set('permissionScope', 'owner');
   const response = await fetch(url, {headers: {Authorization: 'Bearer ' + process.env.HAP_PAT}, redirect: 'error', signal: AbortSignal.timeout(15000)});
   if (!response.ok) throw Error('HAP request failed with HTTP ' + response.status);
   const body = await response.json();
-  if (!body.success) throw Error('HAP rejected the request. Verify the organization and PAT permissions.');
+  if (body?.success !== true) throw Error('HAP rejected the request. Verify the organization and PAT permissions.');
   const rows = Array.isArray(body.data) ? body.data : body.data?.apps;
   if (!Array.isArray(rows)) throw Error('Unrecognized app list format.');
-  return rows.filter(a => a.isOwner !== false).map(a => {
+  return rows.filter(a => a?.isOwner === true).map(a => {
     const id = a.appId ?? a.id, name = a.name ?? a.appName;
-    if (!id || !name) throw Error('An application is missing its ID or name.');
+    if (typeof id !== 'string' || !id.trim() || typeof name !== 'string' || !name.trim()) {
+      throw Error('An application is missing its ID or name.');
+    }
     return {id, name};
   });
 }
@@ -47,7 +51,7 @@ async function main() {
     return;
   }
   if (!command || command === 'help') {
-    console.log('hap-design new [--org ID --origin HTTPS_ORIGIN]\nhap-design apps --org ID --origin HTTPS_ORIGIN\nhap-design styles\nhap-design check BRIEF.json\nhap-design scaffold BRIEF.json --template standalone|dispatch --out NEW_DIRECTORY');
+    console.log('hap-design new [--org ID --origin HTTPS_API_BASE]\nhap-design apps --org ID --origin HTTPS_API_BASE\nhap-design styles\nhap-design check BRIEF.json\nhap-design scaffold BRIEF.json --template standalone|dispatch --out NEW_DIRECTORY');
     return;
   }
   if (!['apps','new','styles'].includes(command)) throw Error('Unknown command. Run hap-design help.');
@@ -72,15 +76,7 @@ async function scaffold(data, template, output) {
   await cp(asset('templates/' + source), join(target, 'index.html'));
   if (template === 'dispatch') await cp(asset('templates/dispatch/dispatch.js'), join(target, 'dispatch.js'));
   await cp(asset('components/ui.css'), join(target, 'ui.css'));
-  const palette = {
-    business: ['#f4f6f3', '#20312d', '#ffffff', '#16694c', '#ffffff'],
-    editorial: ['#fff1da', '#3d2e22', '#fffcf5', '#864419', '#ffffff'],
-    dark: ['#192631', '#f0f5fa', '#243545', '#95dbef', '#192631'],
-  }[data.style];
-  const keys = ['canvas', 'ink', 'panel', 'accent', 'on-accent'];
-  const typography = {sans: 'system-ui, sans-serif', serif: 'Georgia, serif', mono: 'monospace'}[data.font];
-  const rules = palette.map((color, index) => '  --' + keys[index] + ': ' + color + ';');
-  rules.push('  --typeface: ' + typography + ';', '  --space: ' + (data.density === 'compact' ? '.65rem' : '1rem') + ';');
+  const rules = Object.entries(brief.designTokens(data)).map(([key, value]) => '  --' + key + ': ' + value + ';');
   await writeFile(join(target, 'theme.css'), ':root {\n' + rules.join('\n') + '\n}\n');
 }
 

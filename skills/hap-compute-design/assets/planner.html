@@ -2,7 +2,7 @@
 <html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Website brief · HAP Design Kit</title>
 <style>
-*{box-sizing:border-box}body{margin:auto;max-width:760px;padding:24px;font:16px/1.5 Inter,system-ui,sans-serif;background:#faf9f6;color:#262824}h1{letter-spacing:-.045em;font-size:clamp(32px,6vw,52px)}fieldset{border:0;border-top:1px solid #c6c8c0;margin:24px 0;padding:14px 0}legend{font-size:1.35rem;font-weight:650}label{display:block;margin:12px 0}input,select,button,textarea{display:block;width:100%;padding:10px;font:inherit;border:1px solid #8b9087;border-radius:5px;background:white;color:inherit}button{background:#244e40;color:white;cursor:pointer}#sample{padding:24px;margin-top:20px;border:1px solid #bbb;border-left:6px solid var(--accent);background:var(--paper);color:var(--ink)}#sample strong{font-size:1.5em}#sample small{color:var(--accent)}[hidden]{display:none}
+*{box-sizing:border-box}body{margin:auto;max-width:760px;padding:24px;font:16px/1.5 Inter,system-ui,sans-serif;background:#faf9f6;color:#262824}h1{letter-spacing:-.045em;font-size:clamp(32px,6vw,52px)}fieldset{border:0;border-top:1px solid #c6c8c0;margin:24px 0;padding:14px 0}legend{font-size:1.35rem;font-weight:650}label{display:block;margin:12px 0}input,select,button,textarea{display:block;width:100%;padding:10px;font:inherit;border:1px solid #8b9087;border-radius:5px;background:white;color:inherit}button{background:#244e40;color:white;cursor:pointer}#sample{padding:var(--space);margin-top:20px;border:1px solid #bbb;border-left:6px solid var(--accent);background:var(--panel);color:var(--ink);font-family:var(--typeface)}#sample strong{font-size:1.5em}#sample small{color:var(--accent)}[hidden]{display:none}
 </style><main><h1>Website brief</h1><p>Choose a direction, preview it and save a brief for your coding agent.</p>
 <label>Reopen an existing brief<input id="import" type="file" accept=".json,application/json"></label>
 <p id="message" role="status"></p>
@@ -32,18 +32,15 @@
 <script src="brief.js"></script>
 <script>
 const form=document.querySelector('form'), fields=form.elements, sample=document.querySelector('#sample');
-const palettes=[['#ffffff','#172d24','#276447'],['#fff1da','#3d2e22','#864419'],['#192631','#f0f5fa','#95dbef']];
 function refresh(){
   const connected=fields.source.selectedIndex===1;
   document.querySelector('#appLabel').hidden=!connected;
   fields.app.disabled=!connected;
   document.querySelector('#appHint').textContent=document.querySelector('#appHint').dataset.discovery === 'true'
-    ? (fields.app.options.length > 1 ? 'Applications scoped to your current ownership.' : 'No owned applications were returned for this organization.')
+    ? (Array.from(fields.app.options).some(option => option.value && !option.dataset.originalName) ? 'Applications scoped to your current ownership.' : 'No owned applications were returned for this organization.')
     : 'To discover apps, run hap-design new with --org, --origin and HAP_PAT in your environment. Imported choices have not been verified.';
-  const palette=palettes[fields.namedItem('style').selectedIndex];
-  ['--paper','--ink','--accent'].forEach((key,i)=>sample.style.setProperty(key,palette[i]));
-  sample.style.fontFamily=['system-ui','Georgia, serif','monospace'][fields.font.selectedIndex];
-  sample.style.padding=fields.density.selectedIndex?'10px':'24px';
+  const tokens = designTokens({style: fields.namedItem('style').value, font: fields.font.value, density: fields.density.value});
+  for (const [key, value] of Object.entries(tokens)) sample.style.setProperty('--' + key, value);
 }
 const message = document.querySelector('#message');
 const plan = document.querySelector('#plan');

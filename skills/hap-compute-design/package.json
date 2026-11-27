@@ -1,6 +1,6 @@
 {
   "name": "hap-compute-design",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "private": true,
   "bin": {
     "hap-design": "bin/hap-design.mjs"
