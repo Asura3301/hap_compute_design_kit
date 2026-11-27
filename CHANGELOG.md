@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.0
+
+- Add AeroFreight Operations Desk with a shipment queue, route detail and operations timeline.
+- Integrate the Compute authentication SDK and query HAP as the signed-in user.
+- Provide an offline sample workspace and role-aware API and browser tests.
+- Add a Codex plugin manifest, local marketplace and a VS Code extension with a packaged CLI.
+- Publish plugin, skill, CLI and VSIX artifacts through GitHub Actions.
+
 ## 0.3.1
 
 - Use the documented HAP owner query and verify the returned ownership flag. Support HTTPS bases for HAP SaaS and HAP Server.

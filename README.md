@@ -11,6 +11,26 @@ Plan and build a standalone site or a frontend for an existing HAP application. 
 
 </details>
 
+## AeroFreight Operations Desk
+
+A reference application with a shipment queue, page metrics, search, status filters, route details and an operations timeline. The Compute version uses the signed-in HAP user's permissions to read the connected worksheets. The screenshot uses sample data.
+
+![AeroFreight Operations Desk showing a shipment and operations timeline](docs/media/aerofreight.png)
+
+From the repository root, run `npm run demo` and open the printed local URL. Follow the [AeroFreight setup](apps/aerofreight/README.md) to connect an existing app.
+
+## Repository map
+
+| Component | Location |
+| --- | --- |
+| Web UI and Compute API | [apps/aerofreight](apps/aerofreight) |
+| Codex plugin and local catalog | [plugin.json](plugin.json) · [.agents/plugins](.agents/plugins) |
+| VS Code extension | [extensions/vscode](extensions/vscode) |
+| Planner, CLI and reusable templates | [skills/hap-compute-design](skills/hap-compute-design) |
+| HAP adapter and browser tests | [tests](tests) |
+| CLI tests | [skills/hap-compute-design/test](skills/hap-compute-design/test) |
+| Upstream design references | [docs/REFERENCES.md](docs/REFERENCES.md) |
+
 ## Quick start
 
 You need Git and Node.js 18 or later.
@@ -22,6 +42,12 @@ node skills/hap-compute-design/bin/hap-design.mjs new
 ```
 
 Open the printed URL in your browser. Choose **Standalone website**, complete the brief and preview the screen plan. Download `design-brief.json` into your website project. Use **Reopen an existing brief** to revise it. The planner also imports briefs exported by version 0.2.
+
+## Install the Codex plugin or VS Code extension
+
+For Codex, register this local clone with `codex plugin marketplace add .` from the repo root. Reload ChatGPT desktop, select **HAP Compute Design Kit** as the local source in Plugins, and install the plugin there. The plugin bundles the same skill and assets as the manual installation below. [Codex plugin packaging](https://developers.openai.com/plugins/build/plugins)
+
+For VS Code, download the VSIX from a successful [GitHub Actions run](https://github.com/Asura3301/hap_compute_design_kit/actions/workflows/cli.yml) and choose **Extensions → Install from VSIX**. The extension adds the **HAP Design** commands to the Command Palette. [Extension README](extensions/vscode/README.md)
 
 ## Install the agent skill and CLI
 
@@ -35,7 +61,7 @@ cp -R skills/hap-compute-design "$PROJECT_DIR/.agents/skills/"
 
 Open that project in your agent and ask it to “Use hap-compute-design with design-brief.json. Show me the screens and how we will test the primary task.” For a Compute project, install the official Compute skill using **Create Compute → Connect Other AI Tools** in your organization. [HAP Compute setup](https://help.mingdao.com/en/compute/#22-connect-other-ai-tools)
 
-To make `hap-design` available on your PATH, run `npm install -g ./skills/hap-compute-design` from the clone. For local development use `npm link` from the skill directory. Checked builds are available as workflow artifacts in [GitHub Actions](https://github.com/Asura3301/hap_compute_design_kit/actions/workflows/cli.yml). For an archive installation, download the artifact from a successful run, unzip it and run `npm install -g ./hap-compute-design-0.3.1.tgz` using the filename in the artifact.
+To make `hap-design` available on your PATH, run `npm install -g ./skills/hap-compute-design` from the clone. For local development use `npm link` from the skill directory. Checked builds are available as workflow artifacts in [GitHub Actions](https://github.com/Asura3301/hap_compute_design_kit/actions/workflows/cli.yml). For an archive installation, download the artifact from a successful run, unzip it and run `npm install -g ./hap-compute-design-0.4.0.tgz` using the filename in the artifact.
 
 | Command | What it does |
 | --- | --- |
@@ -60,6 +86,6 @@ To connect the queue to an existing HAP app, map its fields to your Compute serv
 
 ## Development
 
-Run `npm test --prefix skills/hap-compute-design` to test the CLI. CI also runs Chromium tests and builds downloadable skill and npm archives with SHA256 checksums. The starter checks cover keyboard navigation, 360 px layout, axe accessibility rules and a 16 KiB local page payload budget. See the [changelog](CHANGELOG.md) for version history. See the [release plan](docs/ROADMAP.md) for packaging, visual checks and the live Compute acceptance scenarios.
+Run `npm test` for CLI and adapter tests. CI also runs Chromium tests and builds downloadable plugin, skill, extension and npm archives with SHA256 checksums. The starter checks cover keyboard navigation, 360 px layout, axe accessibility rules and a 16 KiB local page payload budget. See the [changelog](CHANGELOG.md) for version history. See the [release plan](docs/ROADMAP.md) for packaging, visual checks and the live Compute acceptance scenarios.
 
 [MIT license](LICENSE)

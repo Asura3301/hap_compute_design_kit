@@ -1,0 +1,11 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "hap-compute-design-kit",
+  "version": "0.4.0",
+  "description": "Plan, scaffold and review accessible frontends for HAP Compute.",
+  "extensions": {
+    "com.openai": {
+      "requires_local_executor": true
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "hap-compute-design-kit",
+  "displayName": "HAP Compute Design Kit",
+  "description": "Open the HAP design planner and validate or scaffold from a design brief.",
+  "version": "0.4.0",
+  "publisher": "Asura3301",
+  "license": "MIT",
+  "engines": { "vscode": "^1.85.0" },
+  "categories": ["Other"],
+  "repository": { "type": "git", "url": "https://github.com/Asura3301/hap_compute_design_kit.git" },
+  "capabilities": { "untrustedWorkspaces": { "supported": false } },
+  "main": "./extension.cjs",
+  "contributes": {
+    "commands": [
+      { "command": "hapDesign.new", "title": "HAP Design: Open Planner" },
+      { "command": "hapDesign.styles", "title": "HAP Design: Preview Styles" },
+      { "command": "hapDesign.check", "title": "HAP Design: Validate Brief" },
+      { "command": "hapDesign.scaffold", "title": "HAP Design: Scaffold Frontend" }
+    ]
+  }
+}

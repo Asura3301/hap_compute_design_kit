@@ -1,0 +1,10 @@
+{
+  "name": "hap-compute-design-kit",
+  "interface": { "displayName": "HAP Compute Design Kit" },
+  "plugins": [{
+    "name": "hap-compute-design-kit",
+    "source": { "source": "local", "path": "./" },
+    "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
+    "category": "Productivity"
+  }]
+}

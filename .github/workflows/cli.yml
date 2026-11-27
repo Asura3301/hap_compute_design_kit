@@ -13,7 +13,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
-      - run: npm test --prefix skills/hap-compute-design
+      - run: npm test
       - name: Test the packed CLI from outside the checkout
         run: |
           npm pack ./skills/hap-compute-design --pack-destination "$RUNNER_TEMP"
@@ -35,7 +35,7 @@ jobs:
           npm install --prefix "$RUNNER_TEMP/browser" playwright@1.65.1 @axe-core/playwright@4.14.1
           "$RUNNER_TEMP/browser/node_modules/.bin/playwright" install --with-deps chromium
       - name: Verify both starter journeys and API states
-        run: NODE_PATH="$RUNNER_TEMP/browser/node_modules" node scripts/browser-test.cjs
+        run: NODE_PATH="$RUNNER_TEMP/browser/node_modules" npm run test:browser
   package:
     needs: [cli, browser]
     runs-on: ubuntu-latest
@@ -49,8 +49,19 @@ jobs:
           mkdir dist
           npm pack ./skills/hap-compute-design --pack-destination dist
           tar -czf dist/hap-compute-design-skill.tar.gz -C skills hap-compute-design
+          tar -czf dist/hap-compute-design-plugin.tar.gz plugin.json skills LICENSE
+      - name: Build VS Code extension
+        run: |
+          npm install --prefix "$RUNNER_TEMP/extension-tools" @vscode/vsce@4.1.1
+          cp -R skills/hap-compute-design extensions/vscode/kit
+          cd extensions/vscode
+          "$RUNNER_TEMP/extension-tools/node_modules/.bin/vsce" package --no-dependencies --out ../../dist/hap-compute-design-kit.vsix
+          unzip -Z1 ../../dist/hap-compute-design-kit.vsix | grep -Fx extension/kit/bin/hap-design.mjs
+      - name: Check archive checksums
+        run: |
           cd dist
-          sha256sum *.tgz *.tar.gz > SHA256SUMS
+          sha256sum *.tgz *.tar.gz *.vsix > SHA256SUMS
+          sha256sum --check SHA256SUMS
       - uses: actions/upload-artifact@v4
         with:
           name: hap-compute-design
