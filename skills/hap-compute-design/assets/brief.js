@@ -18,10 +18,16 @@ const legacy = {
   device: ['На телефоне и компьютере', 'На телефоне', 'На компьютере'],
 };
 
+const discoveryChoices = {
+  mode: ['operate', 'persuade', 'read'],
+  login: ['none', 'hap', 'existing'],
+  scope: ['preserve', 'selected'],
+};
+
 function normalizeBrief(input) {
   if (!input || typeof input !== 'object' || Array.isArray(input)) throw Error('Expected a JSON brief object.');
-  if (input.version !== undefined && input.version !== 1) throw Error('Unsupported brief version.');
-  const brief = {version: 1};
+  if (input.version !== undefined && ![1, 2].includes(input.version)) throw Error('Unsupported brief version.');
+  const brief = {version: input.version === 2 ? 2 : 1};
   for (const [field, allowed] of Object.entries(choices)) {
     const value = input.version === undefined ? allowed[legacy[field].indexOf(input[field])] : input[field];
     if (!allowed.includes(value)) throw Error('Choose a valid value for ' + field + '.');
@@ -29,7 +35,24 @@ function normalizeBrief(input) {
   }
   const required = ['project', 'audience', 'task', 'acceptance'];
   if (brief.source === 'hap') required.push('app', 'appName');
-  for (const field of [...required, 'pages', 'permissions', 'brand', 'languages', 'needs']) {
+  if (brief.version === 2) {
+    if (!discoveryChoices.mode.includes(input.mode)) throw Error('Choose a valid page purpose.');
+    brief.mode = input.mode;
+    brief.login = brief.access === 'public' ? 'none' : input.login;
+    if (!discoveryChoices.login.includes(brief.login) || (brief.login === 'none' && brief.access !== 'public')) {
+      throw Error('Choose how private users sign in.');
+    }
+    if (brief.access !== 'public') required.push('permissions');
+    if (brief.login === 'existing') required.push('loginNotes');
+    if (brief.source === 'hap') {
+      if (!discoveryChoices.scope.includes(input.scope)) throw Error('Choose what the website should cover.');
+      brief.scope = input.scope;
+      required.push('features');
+    }
+    if (brief.access === 'mixed') required.push('publicPages');
+  }
+  const optional = ['pages', 'permissions', 'brand', 'languages', 'needs'];
+  for (const field of new Set([...required, ...optional])) {
     const value = input[field] === undefined && !required.includes(field) ? '' : input[field];
     if (typeof value !== 'string' || value.length > 4000 || (required.includes(field) && !value.trim())) {
       throw Error('Check the value for ' + field + '.');

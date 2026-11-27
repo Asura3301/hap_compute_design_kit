@@ -14,7 +14,7 @@ async function capture() {
     const appearance = page.locator('#appearance');
     const frames = [];
     for (const index of [0, 1, 2]) {
-      await page.selectOption('[name="style"]', {index});
+      await page.selectOption('[name="style"]', {index: index + 1});
       await page.selectOption('[name="font"]', {index});
       await page.selectOption('[name="density"]', {index: index === 2 ? 1 : 0});
       frames.push(await appearance.screenshot());

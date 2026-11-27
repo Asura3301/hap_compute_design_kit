@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
 import brief from '../assets/brief.js';
+import {writeHandoff} from './handoff.mjs';
 
 async function listApps(org, origin) {
   if (!org || !origin || !process.env.HAP_PAT) throw Error('Provide --org, --origin (your organization’s HTTPS API origin) and HAP_PAT.');
@@ -32,6 +33,15 @@ async function listApps(org, origin) {
 
 async function main() {
   const {positionals: [command, file, ...extra], values} = parseArgs({allowPositionals:true, options:{org:{type:'string'}, origin:{type:'string'}, out:{type:'string'}, template:{type:'string'}}});
+  if (command === 'handoff') {
+    if (!file || extra.length || !values.out || values.template || values.org || values.origin) {
+      throw Error('Usage: hap-design handoff BRIEF.json --out NEW_DIRECTORY');
+    }
+    const data = brief.normalizeBrief(JSON.parse(await readFile(file, 'utf8')));
+    await writeHandoff(data, values.out);
+    console.log(values.out);
+    return;
+  }
   if (command === 'scaffold') {
     if (!file || extra.length || !values.out || !['standalone', 'dispatch'].includes(values.template) || values.org || values.origin) {
       throw Error('Usage: hap-design scaffold BRIEF.json --template standalone|dispatch --out NEW_DIRECTORY');
@@ -51,7 +61,7 @@ async function main() {
     return;
   }
   if (!command || command === 'help') {
-    console.log('hap-design new [--org ID --origin HTTPS_API_BASE]\nhap-design apps --org ID --origin HTTPS_API_BASE\nhap-design styles\nhap-design check BRIEF.json\nhap-design scaffold BRIEF.json --template standalone|dispatch --out NEW_DIRECTORY');
+    console.log('hap-design new [--org ID --origin HTTPS_API_BASE]\nhap-design apps --org ID --origin HTTPS_API_BASE\nhap-design styles\nhap-design check BRIEF.json\nhap-design handoff BRIEF.json --out NEW_DIRECTORY\nhap-design scaffold BRIEF.json --template standalone|dispatch --out NEW_DIRECTORY');
     return;
   }
   if (!['apps','new','styles'].includes(command)) throw Error('Unknown command. Run hap-design help.');

@@ -17,7 +17,7 @@ test('normalizes briefs and rejects incomplete, invalid and future briefs', () =
   assert.equal(normalizeBrief(brief).style, 'editorial');
   assert.throws(() => normalizeBrief({...brief, source: 'hap'}), /app/);
   assert.throws(() => normalizeBrief({...brief, acceptance: '  '}), /acceptance/);
-  assert.throws(() => normalizeBrief({...brief, version: 2}), /version/);
+  assert.throws(() => normalizeBrief({...brief, version: 3}), /version/);
   assert.throws(() => normalizeBrief({...brief, style: 'unknown'}), /style/);
   assert.equal(normalizeBrief({...brief, app: 'ignored'}).app, undefined);
 });
@@ -107,6 +107,34 @@ test('uses the owner scope and never includes the PAT in the planner', () => {
     const denied = call('apps', 'denied');
     assert.equal(denied.status, 1);
     assert.match(denied.stderr, /HTTP 403/);
+  } finally {
+    rmSync(cwd, {recursive: true});
+  }
+});
+
+test('requires workflow scope and a sign-in decision for a connected brief', () => {
+  const form = {...brief, version: 2, mode: 'operate', source: 'hap', access: 'mixed',
+    app: 'sample-id', appName: 'Service requests', scope: 'preserve', features: 'Submit a request',
+    permissions: 'Requesters see their own records', publicPages: 'Help'};
+  assert.throws(() => normalizeBrief(form), /sign in/);
+  assert.throws(() => normalizeBrief({...form, login: 'existing'}), /loginNotes/);
+  assert.throws(() => normalizeBrief({...form, login: 'hap', features: ''}), /features/);
+  assert.equal(normalizeBrief({...form, login: 'hap'}).scope, 'preserve');
+});
+
+test('handoff requires the new decisions and preserves existing output', () => {
+  const cwd = mkdtempSync(join(tmpdir(), 'hap-design-handoff-'));
+  try {
+    const file = join(cwd, 'brief.json');
+    const args = [cli, 'handoff', file, '--out', 'handoff'];
+    writeFileSync(file, JSON.stringify(brief));
+    assert.equal(spawnSync(process.execPath, args, {cwd}).status, 1);
+    writeFileSync(file, JSON.stringify({...brief, version: 2, mode: 'read'}));
+    assert.equal(spawnSync(process.execPath, args, {cwd}).status, 0);
+    const product = join(cwd, 'handoff/PRODUCT.md');
+    writeFileSync(product, 'Existing content');
+    assert.equal(spawnSync(process.execPath, args, {cwd}).status, 1);
+    assert.equal(readFileSync(product, 'utf8'), 'Existing content');
   } finally {
     rmSync(cwd, {recursive: true});
   }

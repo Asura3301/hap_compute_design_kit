@@ -26,13 +26,37 @@ async function verify() {
     for (const [field, value] of Object.entries({
       project: 'Depot', audience: 'Guests', task: 'Find opening hours', acceptance: 'Find Saturday hours',
     })) await page.locator('[name="' + field + '"]').fill(value);
-    await page.locator('[name="style"]').selectOption('dark');
+    const field = name => page.locator('[name="' + name + '"]');
+    await page.getByRole('button', {name: 'Preview screen plan'}).click();
+    assert.equal(await field('source').inputValue(), '');
+    assert.equal(await page.locator('#plan').innerText(), '');
+    await field('mode').selectOption('persuade');
+    await page.getByRole('heading', {name: 'Book an equipment inspection'}).waitFor();
+    await page.locator('#preview-size').selectOption('phone');
+    assert.equal(await page.locator('#sample').getAttribute('data-size'), 'phone');
+    await field('source').selectOption('hap');
+    assert.equal(await field('app').isVisible(), true);
+    assert.equal(await field('features').isVisible(), true);
+    await field('access').selectOption('mixed');
+    assert.equal(await field('publicPages').isVisible(), true);
+    await field('login').selectOption('existing');
+    assert.equal(await field('loginNotes').isVisible(), true);
+    await field('source').selectOption('standalone');
+    await field('access').selectOption('public');
+    assert.equal(await field('login').isDisabled(), true);
+    assert.equal(await field('features').isDisabled(), true);
+    await field('style').selectOption('dark');
     await page.getByRole('button', {name: 'Preview screen plan'}).click();
     assert.match(await page.locator('#plan').innerText(), /Find opening hours/);
     const downloadPromise = page.waitForEvent('download');
     await page.getByRole('button', {name: 'Download design brief'}).click();
     const json = join(work, 'brief.json');
     await (await downloadPromise).saveAs(json);
+    const saved = JSON.parse(await readFile(json, 'utf8'));
+    assert.equal(saved.version, 2);
+    assert.equal(saved.mode, 'persuade');
+    assert.equal(saved.login, 'none');
+    assert.equal(saved.loginNotes, undefined);
     await page.reload();
     await page.locator('#import').setInputFiles(json);
     await page.getByText('Brief loaded.', {exact: false}).waitFor();
@@ -41,6 +65,11 @@ async function verify() {
     assert.deepEqual((await new AxeBuilder({page}).analyze()).violations.map(v => v.id), []);
     await assertFits(page);
 
+    const handoff = join(work, 'handoff');
+    run('handoff', json, '--out', handoff);
+    assert.match(await readFile(join(handoff, 'PRODUCT.md'), 'utf8'), /impeccable:product-schema/);
+    assert.match(await readFile(join(handoff, 'DESIGN.md'), 'utf8'), /colors:/);
+    assert.match(await readFile(join(handoff, 'FUNCTIONALITY.md'), 'utf8'), /Workflow mapping/);
     const standalone = join(work, 'standalone');
     run('scaffold', json, '--template', 'standalone', '--out', standalone);
     const dispatch = join(work, 'dispatch');

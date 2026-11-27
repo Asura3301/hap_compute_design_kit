@@ -2,7 +2,13 @@
 <html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Website brief · HAP Design Kit</title>
 <style>
-*{box-sizing:border-box}body{margin:auto;max-width:760px;padding:24px;font:16px/1.5 Inter,system-ui,sans-serif;background:#faf9f6;color:#262824}h1{letter-spacing:-.045em;font-size:clamp(32px,6vw,52px)}fieldset{border:0;border-top:1px solid #c6c8c0;margin:24px 0;padding:14px 0}legend{font-size:1.35rem;font-weight:650}label{display:block;margin:12px 0}input,select,button,textarea{display:block;width:100%;padding:10px;font:inherit;border:1px solid #8b9087;border-radius:5px;background:white;color:inherit}button{background:#244e40;color:white;cursor:pointer}#sample{padding:var(--space);margin-top:20px;border:1px solid #bbb;border-left:6px solid var(--accent);background:var(--panel);color:var(--ink);font-family:var(--typeface)}#sample strong{font-size:1.5em}#sample small{color:var(--accent)}[hidden]{display:none}
+*{box-sizing:border-box}body{margin:auto;max-width:760px;padding:24px;font:16px/1.5 Inter,system-ui,sans-serif;background:#faf9f6;color:#262824}h1{letter-spacing:-.045em;font-size:clamp(32px,6vw,52px)}fieldset{border:0;border-top:1px solid #c6c8c0;margin:24px 0;padding:14px 0}legend{font-size:1.35rem;font-weight:650}label{display:block;margin:12px 0}input,select,button,textarea{display:block;width:100%;padding:10px;font:inherit;border:1px solid #8b9087;border-radius:5px;background:white;color:inherit}button{background:#244e40;color:white;cursor:pointer}#sample{padding:var(--space);margin-top:20px;border:1px solid #a5a8a0;background:var(--canvas);color:var(--ink);font-family:var(--typeface)}#sample h2{margin:.25rem 0;font-size:clamp(1.35rem,4vw,2rem);line-height:1.15}
+.preview-grid{display:grid;gap:.75rem;margin-top:.75rem}.preview-head{display:flex;gap:1rem;flex-wrap:wrap;justify-content:space-between;border-bottom:1px solid currentColor;padding-bottom:.4rem}.preview-head span{color:var(--accent);font-weight:650}
+.preview-surface{background:var(--panel);padding:var(--space)}.preview-row{display:flex;justify-content:space-between;gap:.5rem;flex-wrap:wrap;padding:.45rem 0;border-bottom:1px solid currentColor}.preview-row span{color:var(--accent)}
+#sample a{display:inline-block;margin-top:.75rem;padding:.5rem .75rem;background:var(--accent);color:var(--on-accent);font-weight:650}
+#sample[data-size="phone"]{max-width:22rem;margin-inline:auto}
+#sample:not([data-size="phone"]) .preview-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr))}
+[hidden]{display:none!important}
 </style><main><h1>Website brief</h1><p>Choose a direction, preview it and save a brief for your coding agent.</p>
 <label>Reopen an existing brief<input id="import" type="file" accept=".json,application/json"></label>
 <p id="message" role="status"></p>
@@ -11,17 +17,39 @@
 <label>What is the project called?<input name="project" required></label>
 <label>Who will use the site?<input name="audience" placeholder="Customers waiting for a delivery" required></label>
 <label>What should visitors be able to do first?<input name="task" placeholder="Find their delivery date" required></label>
+<label>What kind of page should we design first?<select name="mode" required>
+<option value="">Choose a page purpose</option><option value="operate">Workspace for completing tasks</option><option value="persuade">Public page for explaining an offer</option><option value="read">Portal for finding information</option></select></label>
 <label>Which pages do you need?<input name="pages" placeholder="Orders, history, help"></label></fieldset>
 <fieldset><legend>Data and access</legend>
-<label>Where does the information come from?<select name="source"><option value="standalone">Standalone website</option><option value="hap">Existing HAP app</option></select></label>
+<label>Where does the information come from?<select name="source" required><option value="">Choose a data source</option><option value="standalone">Standalone website</option><option value="hap">Existing HAP app</option></select></label>
 <label id="appLabel" hidden>Which application should the site use?<select name="app" disabled required><option value="">Choose an application</option><!-- APPS --></select><small id="appHint" data-discovery="false"></small></label>
-<label>Who can access the site?<select name="access"><option value="public">Anyone without signing in</option><option value="organization">Employees with an organization account</option><option value="invited">Invited users with an account</option><option value="mixed">Public pages and a private area</option></select></label>
-<label>What can visitors see and do after signing in?<input name="permissions" placeholder="View their own orders"></label></fieldset>
+<label>Who can access the site?<select name="access" required><option value="">Choose an access policy</option><option value="public">Anyone without signing in</option><option value="organization">Employees with an organization account</option><option value="invited">Invited users with an account</option><option value="mixed">Public pages and a private area</option></select></label>
+<label id="login-label" hidden>How should private users sign in?<select name="login" disabled required><option value="">Choose a sign-in method</option><option value="hap">Use the organization's HAP sign-in</option><option value="existing">Use our existing sign-in provider</option></select></label>
+<label id="login-notes" hidden>Which sign-in provider do you already use?<input name="loginNotes" disabled required placeholder="For example, Lark"></label>
+<label id="public-pages" hidden>What may guests see without signing in?<input name="publicPages" disabled required placeholder="Help and opening hours"></label>
+<label id="role-label" hidden>What can each role see and do?<textarea name="permissions" disabled required placeholder="Customers see their own requests. Staff can update requests assigned to them."></textarea></label>
+<label id="scope-label" hidden>How much of the existing app should the site cover?<select name="scope" disabled required><option value="">Choose the website scope</option><option value="preserve">Preserve the current website workflows</option><option value="selected">Build a website for selected HAP workflows</option></select></label>
+<label id="features-label" hidden>Which actions must work end to end?<textarea name="features" disabled required placeholder="Find a record, edit its status, attach a file and submit it for approval"></textarea></label></fieldset>
 <fieldset id="appearance"><legend>Appearance</legend>
-<label>Which style fits the site?<select name="style"><option value="business">Business</option><option value="editorial">Editorial</option><option value="dark">Dark</option></select></label>
+<label>Which style fits the site?<select name="style" required><option value="">Choose a visual direction</option><option value="business">Business</option><option value="editorial">Editorial</option><option value="dark">Dark</option></select></label>
 <label>Which typeface suits the content?<select name="font"><option value="sans">System sans serif</option><option value="serif">Serif</option><option value="mono">Monospace</option></select></label>
 <label>How much information should fit on screen?<select name="density"><option value="roomy">Spacious</option><option value="compact">Compact</option></select></label>
-<article id="sample" aria-label="Style preview"><small>Awaiting dispatch</small><br><strong>Order 1048</strong><div>Pickup tomorrow, 14:00–16:00</div></article>
+<label>Compare preview size<select id="preview-size"><option value="wide">Wide</option><option value="phone">Phone width</option></select></label>
+<article id="sample" aria-label="Style preview">
+  <div class="preview-head"><strong>Fieldwork</strong><span id="sample-context">Workspace</span></div>
+  <div data-mode="operate" class="preview-grid">
+    <section class="preview-surface"><h2>Service requests</h2><div class="preview-row"><strong>Request 1048</strong><span>Scheduled</span></div><div class="preview-row"><strong>Request 1049</strong><span>Needs review</span></div></section>
+    <section class="preview-surface"><h2>Request 1048</h2><p>Equipment inspection</p><p>Tomorrow, 14:00–16:00</p></section>
+  </div>
+  <div data-mode="persuade" class="preview-grid" hidden>
+    <section class="preview-surface"><h2>Book an equipment inspection</h2><p>Pick a time that fits your maintenance schedule.</p><a href="#service-sample">See available times</a></section>
+    <section id="service-sample" class="preview-surface"><h2>Available appointments</h2><p>Tuesday at 10:00</p><p>Wednesday at 14:00</p></section>
+  </div>
+  <div data-mode="read" class="preview-grid" hidden>
+    <section class="preview-surface"><h2>Inspection guide</h2><p>Check the equipment label and record the asset number before booking.</p></section>
+    <section class="preview-surface"><h2>Before your visit</h2><ul><li>Confirm the asset number</li><li>Prepare the maintenance log</li></ul></section>
+  </div>
+</article>
 <label>Do you have brand colors, a logo or examples?<input name="brand"></label></fieldset>
 <fieldset><legend>Devices and usability</legend>
 <label>Where will people use the site?<select name="device"><option value="both">Phone and desktop</option><option value="phone">Mostly on a phone</option><option value="desktop">Mostly on desktop</option></select></label>
@@ -32,14 +60,29 @@
 <script src="brief.js"></script>
 <script>
 const form=document.querySelector('form'), fields=form.elements, sample=document.querySelector('#sample');
+function reveal(id, visible) {
+  const label = document.getElementById(id);
+  label.hidden = !visible;
+  label.querySelector('input, select, textarea').disabled = !visible;
+}
 function refresh(){
-  const connected=fields.source.selectedIndex===1;
-  document.querySelector('#appLabel').hidden=!connected;
-  fields.app.disabled=!connected;
+  const connected = fields.source.value === 'hap';
+  const restricted = Boolean(fields.access.value && fields.access.value !== 'public');
+  reveal('appLabel', connected);
+  reveal('scope-label', connected);
+  reveal('features-label', connected);
+  reveal('login-label', restricted);
+  reveal('login-notes', restricted && fields.login.value === 'existing');
+  reveal('public-pages', fields.access.value === 'mixed');
+  reveal('role-label', restricted);
+  const mode = fields.mode.value || 'operate';
+  for (const item of sample.querySelectorAll('[data-mode]')) item.hidden = item.dataset.mode !== mode;
+  document.querySelector('#sample-context').textContent = {operate: 'Workspace', persuade: 'Public page', read: 'Information portal'}[mode];
+  sample.dataset.size = document.querySelector('#preview-size').value;
   document.querySelector('#appHint').textContent=document.querySelector('#appHint').dataset.discovery === 'true'
     ? (Array.from(fields.app.options).some(option => option.value && !option.dataset.originalName) ? 'Applications scoped to your current ownership.' : 'No owned applications were returned for this organization.')
     : 'To discover apps, run hap-design new with --org, --origin and HAP_PAT in your environment. Imported choices have not been verified.';
-  const tokens = designTokens({style: fields.namedItem('style').value, font: fields.font.value, density: fields.density.value});
+  const tokens = designTokens({style: fields.namedItem('style').value || 'business', font: fields.font.value, density: fields.density.value});
   for (const [key, value] of Object.entries(tokens)) sample.style.setProperty('--' + key, value);
 }
 const message = document.querySelector('#message');
@@ -47,7 +90,7 @@ const plan = document.querySelector('#plan');
 function collectBrief() {
   const brief = Object.fromEntries(new FormData(form));
   if (brief.app) brief.appName = fields.app.selectedOptions[0].dataset.originalName || fields.app.selectedOptions[0].textContent;
-  return normalizeBrief({version: 1, ...brief});
+  return normalizeBrief({version: 2, ...brief});
 }
 form.addEventListener('change', refresh);
 form.addEventListener('input', () => { plan.textContent = ''; });
@@ -69,7 +112,9 @@ document.querySelector('#import').addEventListener('change', async event => {
     }
     refresh();
     plan.textContent = '';
-    message.textContent = 'Brief loaded. Review the settings and download to save changes.';
+    message.textContent = brief.version === 1
+      ? 'Brief loaded. Complete the new questions before exporting.'
+      : 'Brief loaded. Review the settings and download to save changes.';
   } catch (error) {
     message.textContent = 'Could not open brief. ' + error.message;
   } finally {
@@ -81,9 +126,15 @@ document.querySelector('#preview').addEventListener('click', () => {
   try {
     const brief = collectBrief();
     plan.textContent = [
+      'Site: ' + (brief.appName || 'Standalone'),
+      'Access: ' + fields.access.selectedOptions[0].textContent,
+      'Sign-in: ' + (brief.login === 'none' ? 'None' : fields.login.selectedOptions[0].textContent),
+      'Page: ' + fields.mode.selectedOptions[0].textContent,
+      'Appearance: ' + fields.namedItem('style').selectedOptions[0].textContent,
       'Audience: ' + brief.audience,
       'Primary task: ' + brief.task,
       'Screens: ' + (brief.pages || 'Start with the primary task'),
+      ...(brief.features ? ['Must work: ' + brief.features] : []),
       'Launch test: ' + brief.acceptance,
     ].join(' · ');
     message.textContent = '';

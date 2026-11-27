@@ -2,7 +2,7 @@
   "name": "hap-compute-design-kit",
   "displayName": "HAP Compute Design Kit",
   "description": "Open the HAP design planner and validate or scaffold from a design brief.",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "publisher": "Asura3301",
   "license": "MIT",
   "engines": { "vscode": "^1.85.0" },
