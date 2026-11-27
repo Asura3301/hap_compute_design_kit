@@ -1,17 +1,64 @@
-# hap_compute_design_kit
-Additional Skill To Design Websites with HAP Compute
+# HAP Compute Design Kit
 
-## Install the design skill
-From a checked-out copy, copy the entire skills/hap-compute-design directory into the agent's project skills directory (for example .agents/skills/). The component stylesheet, example template and integration guide travel with it. The HTML example opens directly from assets/templates/index.html. Installation does not modify application files. Copy a recipe into the target application when needed.
+Соберите бриф для сайта HAP Compute и передайте его coding agent. Мастер помогает выбрать аудиторию, источник данных, способ входа и оформление. Палитру, шрифт и плотность можно сравнить на одной и той же карточке заказа.
 
-Install the HAP Compute platform skill separately through its supported distribution. The design kit can also work locally with synthetic data.
+![Визуальный выбор оформления в мастере](docs/media/planner.png)
 
-## Design references
-Original instructions and assets informed by [Impeccable](https://github.com/pbakaus/impeccable), [Emil Kowalski's skills](https://github.com/emilkowalski/skills) and [Taste Skill](https://github.com/Leonxlnx/taste-skill). Optional performance audits use [Cloudflare web-perf](https://github.com/cloudflare/skills/tree/main/skills/web-perf).
+<details>
+<summary>Посмотреть анимацию трёх вариантов оформления</summary>
 
-## Project planner
-With Node 18+ run `npm link` inside `skills/hap-compute-design` to expose the local `hap-design` command, or call `node skills/hap-compute-design/bin/hap-design.mjs` directly. No runtime dependencies.
+![Деловое, редакционное и тёмное оформление одной карточки заказа](docs/media/styles.gif)
 
-- `hap-design new` prints a private local HTML file URL. Open it, configure the site, compare live visual options and download design-brief.json for the coding agent.
-- `hap-design styles` opens the same workflow at its appearance section via the printed URL.
-- `hap-design apps --org ORG_ID --origin https://YOUR-TRUSTED-API-HOST` lists currently owned apps. Supply HAP_PAT through the local environment. Use the exact API origin of the organization. The CLI sends the token only to that origin. Use the same options with `new` to populate the picker. The temporary HTML contains app names and IDs. Keep it local.
+</details>
+
+## Попробовать за минуту
+
+Понадобятся Git и Node.js 18 или новее. Для знакомства достаточно локального компьютера.
+
+```sh
+git clone https://github.com/Asura3301/hap_compute_design_kit.git
+cd hap_compute_design_kit
+node skills/hap-compute-design/bin/hap-design.mjs new
+```
+
+Откройте выведенную ссылку в браузере. Выберите «Самостоятельный сайт», заполните вопросы и нажмите «Скачать бриф проекта». Переместите полученный `design-brief.json` в проект сайта.
+
+## Подключить skill к агенту
+
+Скопируйте **весь каталог** `skills/hap-compute-design` в директорию навыков агента. Например, из корня этого репозитория для проекта, использующего `.agents/skills`, при первой установке выполните следующие команды, заменив путь своим.
+
+```sh
+PROJECT_DIR="/absolute/path/to/your-site"
+mkdir -p "$PROJECT_DIR/.agents/skills"
+cp -R skills/hap-compute-design "$PROJECT_DIR/.agents/skills/"
+```
+
+Откройте проект сайта в агенте и попросите: «Используй hap-compute-design и design-brief.json. Покажи план экранов для главной задачи пользователя». Для разработки и публикации в HAP Compute отдельно подключите официальный skill `hap-compute-app` через поддерживаемый вашей организацией способ установки.
+
+## Короткие команды
+
+Чтобы вызывать CLI из любой папки, выполните из корня клона:
+
+```sh
+(cd skills/hap-compute-design && npm link)
+hap-design help
+```
+
+| Команда | Результат |
+| --- | --- |
+| `hap-design new` | Локальная ссылка на мастер нового проекта |
+| `hap-design styles` | Мастер, открытый на выборе оформления |
+| `hap-design apps --org ID --origin HTTPS_ORIGIN` | Список приложений, которыми владеет пользователь PAT |
+| `hap-design new --org ID --origin HTTPS_ORIGIN` | Мастер с выбором из этого списка |
+
+Для двух последних команд задайте `HAP_PAT` через локальное окружение. Подставьте ID организации и проверенный HTTPS-адрес её **API**, без пути и завершающего слеша. CLI отправляет PAT на указанный адрес. Временная страница хранит имена и ID приложений. Держите её на своём компьютере. Способ входа будущих посетителей выбирается отдельно в брифе.
+
+## Состав версии 0.2
+
+- [Инструкции агента](skills/hap-compute-design/SKILL.md) и [передача проекта HAP Compute](skills/hap-compute-design/references/compute.md).
+- [HTML-шаблон очереди заказов](skills/hap-compute-design/assets/templates/index.html) и [базовые стили](skills/hap-compute-design/assets/components/ui.css).
+- [План до версии 1.0](docs/ROADMAP.md) с критериями приёмки, интеграциями, GitHub CI и подготовкой релиза.
+
+Мастер и экспорт брифа проверены в Chrome. Получение приложений проверено на тестовом ответе API. Проверка на реальном аккаунте и публикация тестового сайта в Compute входят в этап интеграции.
+
+[Лицензия MIT](LICENSE)

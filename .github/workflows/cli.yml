@@ -1,0 +1,26 @@
+name: CLI smoke test
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  planner:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [18, lts/*]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Exercise installed CLI from outside the checkout
+        run: |
+          cd skills/hap-compute-design
+          npm_config_prefix="$RUNNER_TEMP/kit" npm link
+          cd "$RUNNER_TEMP"
+          export PATH="$RUNNER_TEMP/kit/bin:$PATH"
+          hap-design help
+          for command in new styles; do
+            result=$(hap-design "$command")
+            node -e 'const fs=require("node:fs"); const url=new URL(process.argv[1]); if (!fs.readFileSync(url,"utf8").includes("design-brief.json")) process.exit(1); if(process.argv[2]==="styles" && url.hash!=="#appearance") process.exit(1)' "$result" "$command"
+          done
