@@ -1,45 +1,38 @@
-# План выпуска 1.0
+# Release plan
 
-Первый пользователь — разработчик или партнёр HAP, которому нужно превратить бриф клиента в работающий сайт. Контрольный сценарий выпуска — сотрудник открывает очередь отправок с телефона, находит нужный заказ и видит следующий шаг. Второй сценарий — самостоятельный публичный сайт. Оба начинаются с чистой установки.
+The two acceptance scenarios are a public standalone site and a dispatch queue backed by an existing HAP app. In the second scenario, a signed-in employee finds a shipment on a phone and checks its pickup window and next action.
 
-## Этапы и критерии завершения
-
-| Этап | Работа | Свидетельство готовности |
+| Stage | Deliverable | Acceptance |
 | --- | --- | --- |
-| 1. Основа и упаковка | Версионировать CLI, skill, assets и инструкции одним пакетом. Сохранить запуск из клона и установку полной папки. Добавить CI проверки команд и целостности ресурсов | Чистый checkout генерирует HTML через new и styles. Установленный CLI находит свои шаблоны из другого каталога |
-| 2. Соглашение о брифе | Зафиксировать версию формата JSON, обязательные поля, правила для standalone и HAP. Добавить чтение старого брифа, редактирование, предварительный просмотр плана и понятные ошибки | Экспорт и повторное открытие сохраняют настройки. Пользователь подтверждает роль, задачу и стиль до генерации |
-| 3. Интеграция | Проверить owner picker на тестовой организации с PAT, пустой список, истёкший токен и смену владельца. Привязать выбранные поля и разрешённые действия к существующему адаптеру приложения. Проверить способы входа в целевой среде | Два пользователя с разными правами проходят ожидаемые сценарии. Ошибка API отличается от отсутствия данных. Исходные настройки HAP проверены до и после |
-| 4. Компоненты и шаблоны | Выделить токены и доступные элементы формы, строки, статуса, панели подробностей. Собрать очередь, карточку, форму и публичную страницу. Дать каждому пример с длинным текстом, загрузкой, ошибкой и пустым результатом | Два сайта из контрольных сценариев используют общие компоненты. Основная задача выполняется на телефоне и клавиатурой |
-| 5. Реализация правил дизайна | Ввести выбор режима страницы, проверку по брифу, локальное визуальное ревью и отчёт по скорости. Сравнить одинаковую задачу с базовым агентом и с пакетом | Зафиксированы ошибки, время выполнения и слепые предпочтения пользователей. Итоговый отчёт содержит и случаи, где пакет не помог |
-| 6. Приёмка и релиз | Проверить локальный preview, затем в отдельной тестовой среде Compute — сборку, авторизацию, опубликованный сайт и повторный вход. Обновить README, медиа, changelog и примеры под фактический результат | Другой человек устанавливает пакет по README и воспроизводит оба сценария. В GitHub Release приложены версия, изменения, архив skill и SHA256 |
+| Packaging | Installable CLI and full skill folder | Fresh packages resolve their bundled files from a different directory |
+| Planning | Versioned JSON, editable import and screen plan preview | A saved brief opens with the same choices. Version 0.2 briefs migrate |
+| HAP integration | Owner-scoped picker and a documented server-side adapter contract | In a disposable organization, verify the picker and test the published app with two roles |
+| Frontend | Standalone and dispatch templates with shared styles | Verify the primary task on mobile and keyboard. Exercise loading, empty and error states |
+| Design review | A common design rubric and performance checks | Record observations and before/after traces. Compare the same brief with and without the kit |
+| Release | Tested archive, SHA256, README and media | Install the archive in a clean project and run both scenarios. Record the outcome of the hosted test |
 
-Порядок зависимостей: согласовать формат брифа до разработки нескольких шаблонов. Проверить реальные права до подключения клиентских данных. Снимать итоговые материалы после приёмки интерфейсов.
+## Reference projects
 
-## Что заимствуем и где проходит граница
+| Reference | Application |
+| --- | --- |
+| [Impeccable](https://github.com/pbakaus/impeccable) | Review hierarchy, spacing, states and visual consistency on the rendered screen |
+| [Taste Skill](https://github.com/Leonxlnx/taste-skill) | Choose and record a visual direction for the page's content and task |
+| [Emil Kowalski](https://github.com/emilkowalski/skills) | Review the timing, focus behavior and reduced-motion treatment of interactions |
+| [Cloudflare web-perf](https://github.com/cloudflare/skills/tree/main/skills/web-perf) | Compare browser traces for the same route, device and task |
+| [HAP Compute](https://help.mingdao.com/en/compute/) | Initialize the project, configure access, run the platform review, deploy and verify the live URL |
 
-| Проект | Элемент, который нужен | Как встроить и проверить |
-| --- | --- | --- |
-| [Impeccable](https://github.com/pbakaus/impeccable) | Режим страницы, critique, audit и polish | Сделать собственную рубрику в references. Проверять сначала задачу, иерархию и состояния, затем оформление. Каждое замечание привязывать к экрану и наблюдаемой проблеме |
-| [Taste Skill](https://github.com/Leonxlnx/taste-skill) | Выбор композиции, типографики, плотности и визуального направления | Хранить принятые решения в брифе. Для публичного сайта показать композицию первого экрана, для кабинета — список с реальными длинами полей. Проверять визуальные варианты на одинаковом содержимом |
-| [Emil Kowalski](https://github.com/emilkowalski/skills) | Правила для движения, фокуса и обратной связи | Применять в компонентах. Проверять клавиатуру, возврат фокуса, прерванное действие и reduced motion |
-| [Cloudflare web-perf](https://github.com/cloudflare/skills/tree/main/skills/web-perf) | Диагностика загрузки и отклика | Подключать по запросу как отдельный инструмент. Снимать trace до и после на том же маршруте и устройстве. Для статичной страницы измерять появление основного контента, для кабинета — также отклик на выбор заказа |
-| hap-compute-app | Инициализация, шаблон, контракты API и входа, review и deploy | Design Kit получает существующий frontend после инициализации и передаёт изменённые ресурсы обратно перед упаковкой. Сверять контракт приложения при обновлении официального skill |
+Use the application and access contract first, then the approved journey and visual choices, then the relevant design guidance. The kit implements its own instructions and examples. Record provenance, revision and license before importing upstream files.
 
-При конфликте первым учитывается контракт приложения и права, затем подтверждённый пользовательский сценарий и бренд, затем рекомендации отдельных дизайн-проектов. До переноса конкретного стороннего файла фиксировать источник, commit, лицензию и требуемые notices. Текущая версия содержит собственные инструкции и ресурсы.
+## GitHub and acceptance
 
-## Работа на GitHub
+GitHub Actions checks the installed CLI on Node 18 and current LTS. Package the complete skill folder at release and include installation instructions, release notes and SHA256. For layout changes, capture the same content before and after at the same viewport. Log observations without including application records or credentials.
 
-- Завести milestone 1.0 и по одному issue на этапы 2–6. Для каждой задачи записать сценарий воспроизведения и критерий из таблицы. Ошибки установки помечать отдельно от ошибок платформенной интеграции.
-- Для изменений формата брифа, авторизации и сборки проверять pull request в CI на минимальной поддерживаемой и актуальной LTS Node. Проверки подключения к HAP запускать в тестовой организации с отдельным разрешением. В журналы CI выводить только результат проверки.
-- На этапе шаблонов добавить браузерные проверки экспорта JSON, интеграционного выбора на fixture и взаимодействия на мобильной ширине. К PR с изменениями UI прикладывать снимки до и после на одних данных.
-- При выпуске сверить версию package.json, changelog и тег v1.0.0. Проверить установку из архива тега в пустой проект и только затем публиковать Release. Обновления существующих сайтов оставлять под контролем владельца проекта.
+For a live test, use an organization and Compute environment approved for disposable apps. Confirm the actual organization, apps returned by the PAT, access settings and worksheet mapping. Test an allowed and a restricted user, the public path if required, and the same workflow after signing in again. Keep the local synthetic test separate from the live acceptance result.
 
-## Изображения и анимация
+## Media
 
-Исходник текущих медиа — настоящий мастер и синтетический заказ 1048. В README показывается статичный кадр. GIF доступен по раскрытию. Для обновления установить в отдельном рабочем окружении Playwright, Sharp 0.35.5 и Google Chrome, затем выполнить из корня репозитория:
+The README screenshot and GIF use the local planner and a synthetic order. To regenerate them, make Google Chrome, Playwright and Sharp 0.35.5 available, then run `node scripts/capture.cjs` from the repository root. Capture the full brief-to-site workflow after live acceptance.
 
-```sh
-node scripts/capture.cjs
-```
+## Research comparison
 
-Скрипт сохраняет снимок и три кадра смены оформления в docs/media и проверяет число кадров GIF. Для релиза добавить короткую запись полного маршрута «создать бриф → выбрать оформление → скачать → открыть результат в тестовом Compute». Перед публикацией посмотреть мобильный кадр, проверить читаемость и использовать демонстрационные данные.
+Run the same brief and acceptance task with the same agent and model in both conditions. Measure time to the first usable result, task failures, accessibility findings and interaction latency. Collect visual preferences blind to the condition and report all observed outcomes.

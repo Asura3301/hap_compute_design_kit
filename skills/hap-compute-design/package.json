@@ -1,7 +1,20 @@
 {
   "name": "hap-compute-design",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
-  "bin": { "hap-design": "bin/hap-design.mjs" },
-  "engines": { "node": ">=18" }
+  "bin": {
+    "hap-design": "bin/hap-design.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "files": [
+    "bin",
+    "assets",
+    "references",
+    "SKILL.md"
+  ]
 }

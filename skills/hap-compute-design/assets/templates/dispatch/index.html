@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="dispatch-endpoint" content="">
+<title>Dispatch queue</title>
+<link rel="stylesheet" href="ui.css">
+<link rel="stylesheet" href="theme.css">
+<script src="dispatch.js" defer></script>
+<main>
+  <header><p class="eyebrow">Operations</p><h1>Dispatch queue</h1></header>
+  <label for="search">Find an order</label>
+  <input id="search" type="search" placeholder="Order number or status" disabled>
+  <p id="status" role="status"></p>
+  <button id="retry" type="button" hidden>Try again</button>
+  <section aria-label="Orders" id="orders"></section>
+</main>
+</html>

@@ -15,3 +15,6 @@ See references/compute.md for the integration boundary. A design review produces
 2. Read the user's exported design-brief.json. Confirm the primary journey, audience, access, selected app and style with a short screen plan. Treat the supplied brand and chosen style as the visual authority. Surface conflicting requirements before coding.
 3. For HAP integration inspect the selected app read-only and map the journey to existing objects, fields and permitted actions. Route authentication and deployment through the Compute skill. Mixed public/private access requires confirming the available routing and access policy. A design choice never grants permission to change the app schema, permissions, workflows or storage.
 4. Implement the approved screens, check the stated acceptance task on the preferred devices and locales, and hand the verified frontend to Compute.
+
+## Validate and preview
+Use `hap-design check design-brief.json` before implementation. If starting from an empty design, generate a standalone or dispatch preview in a new folder with `hap-design scaffold`. Apply the approved content and confirm which parts are sample data before handing it off. Read references/review.md for visual, accessibility and speed checks. For data binding and deployment read references/compute.md.
