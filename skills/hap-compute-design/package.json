@@ -1,0 +1,7 @@
+{
+  "name": "hap-compute-design",
+  "version": "0.2.0",
+  "private": true,
+  "bin": { "hap-design": "bin/hap-design.mjs" },
+  "engines": { "node": ">=18" }
+}
