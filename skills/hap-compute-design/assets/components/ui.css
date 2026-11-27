@@ -1,0 +1,11 @@
+:root {
+  font: 100%/1.5 Inter, system-ui, sans-serif;
+  color: #20312d;
+  background: #f4f6f3;
+}
+main { max-width: 52rem; margin: 6vh auto; padding: 1rem; }
+details { background: white; border-block-start: 1px solid #a2b3ac; padding: 1rem; }
+summary { cursor: pointer; font-weight: 650; overflow-wrap: anywhere; }
+summary:focus-visible { outline: 3px solid #16694c; outline-offset: 4px; }
+dt { font-weight: 600; }
+dd { margin: 0 0 .75rem; }
